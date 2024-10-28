@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Informasi;
 use App\Models\Kategori; // Tambahkan use Kategori
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class InformasiController extends Controller
 {
@@ -27,13 +28,18 @@ class InformasiController extends Controller
     {
         $request->validate([
             'judul_info' => 'required|string|max:255',
-            'isi_info' => 'required|string',
+            'isi_info' => 'required|image', // Validasi gambar
             'tgl_post_info' => 'required|date',
             'status_info' => 'required|boolean',
             'kategori_id' => 'required|exists:kategori,id', // Validasi kategori_id
         ]);
 
-        Informasi::create($request->all()); // Menyimpan data informasi ke database
+        // Simpan gambar ke storage
+        $path = $request->file('isi_info')->store('images', 'public');
+
+        // Simpan data informasi ke database
+        Informasi::create(array_merge($request->all(), ['isi_info' => $path]));
+
         return redirect()->route('informasi.index')->with('success', 'Informasi berhasil ditambahkan.'); // Redirect dengan pesan sukses
     }
 
@@ -55,19 +61,36 @@ class InformasiController extends Controller
     {
         $request->validate([
             'judul_info' => 'required|string|max:255',
-            'isi_info' => 'required|string',
+            'isi_info' => 'nullable|image', // Gambar bersifat opsional
             'tgl_post_info' => 'required|date',
             'status_info' => 'required|boolean',
             'kategori_id' => 'required|exists:kategori,id', // Validasi kategori_id
         ]);
 
-        $informasi->update($request->all());
+        // Jika ada gambar baru yang diunggah
+        if ($request->hasFile('isi_info')) {
+            // Hapus gambar lama dari storage jika ada
+            if ($informasi->isi_info) {
+                Storage::disk('public')->delete($informasi->isi_info);
+            }
+            // Simpan gambar baru ke storage
+            $path = $request->file('isi_info')->store('images', 'public');
+            $informasi->isi_info = $path; // Perbarui isi_info dengan path baru
+        }
+
+        // Update data informasi tanpa mengubah isi_info jika tidak ada gambar baru
+        $informasi->update($request->except('isi_info'));
+
         return redirect()->route('informasi.index')->with('success', 'Informasi berhasil diperbarui.');
     }
 
     // Menghapus informasi dari database
     public function destroy(Informasi $informasi)
     {
+        // Hapus gambar dari storage jika ada
+        if ($informasi->isi_info) {
+            Storage::disk('public')->delete($informasi->isi_info);
+        }
         $informasi->delete();
         return redirect()->route('informasi.index')->with('success', 'Informasi berhasil dihapus.');
     }

@@ -1,98 +1,115 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
-use App\Models\Photo; // Pastikan model Photo ada
-use App\Models\Galery; // Menggunakan model Galery
+use App\Models\Photo;
+use App\Models\Galery;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Untuk menggunakan Auth
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PhotoController extends Controller
 {
     // Menampilkan semua foto
     public function index()
     {
-        $photos = Photo::all(); // Ambil semua data dari model Photo
-        return view('photo.index', compact('photos')); // Menggunakan 'photos' untuk mengirim data
+        $photos = Photo::with('galery')->get(); // Mengambil semua foto beserta galeri terkait
+        return view('photo.index', compact('photos'));
     }
 
     // Menampilkan form untuk menambah foto
     public function create()
     {
-        $galeries = Galery::all(); // Ambil semua galeri untuk dropdown
-        return view('photo.create', compact('galeries')); // Mengarahkan ke view untuk membuat foto baru
+        // Mengambil semua galeri untuk dropdown
+        $galeries = Galery::all();
+        return view('photo.create', compact('galeries'));
     }
 
     // Menyimpan foto baru ke database
     public function store(Request $request)
     {
-        // Validasi input
+        // Validasi input dari form
         $request->validate([
             'judul_photo' => 'required|string|max:255',
-            'isi_photo' => 'required|url', // Pastikan ini adalah URL yang valid
-            'status_photo' => 'required|boolean', // Validasi untuk status_photo
-            'galery_id' => 'required|exists:galery,id', // Validasi galeri yang ada
+            'isi_photo' => 'required|image', // Pastikan file yang diupload adalah gambar
+            'status_photo' => 'required|boolean',
+            'galery_id' => 'required|exists:galery,id', // Validasi galery_id
         ]);
+
+        // Simpan gambar ke storage dan ambil path-nya
+        $path = $request->file('isi_photo')->store('photos', 'public'); // Simpan di storage/app/public/photos
 
         // Simpan data foto ke database
         Photo::create([
             'judul_photo' => $request->judul_photo,
-            'isi_photo' => $request->isi_photo,
+            'isi_photo' => $path, // Simpan path gambar relatif
             'status_photo' => $request->status_photo,
-            'user_id' => Auth::id(), // Simpan ID pengguna yang sedang login
-            'galery_id' => $request->galery_id, // Mengambil dari request
+            'user_id' => Auth::id(), // Ambil ID pengguna yang sedang login
+            'galery_id' => $request->galery_id,
         ]);
 
-        return redirect()->route('photo.index')->with('success', 'Foto berhasil ditambahkan.'); // Redirect dengan pesan sukses
+        return redirect()->route('photo.index')->with('success', 'Foto berhasil ditambahkan.');
     }
 
     // Menampilkan detail foto
     public function show(Photo $photo)
     {
-        return view('photo.show', compact('photo')); // Mengarahkan ke view untuk menampilkan detail foto
+        return view('photo.show', compact('photo'));
     }
 
     // Menampilkan form untuk mengedit foto
-    public function edit($kd_photo)
+    public function edit(Photo $photo)
     {
-        $photo = Photo::findOrFail($kd_photo); // Pastikan foto ditemukan dengan kode
-        $galeries = Galery::all(); // Ambil semua galeri
-        return view('photo.edit', compact('photo', 'galeries')); // Kirim data foto dan galeri
+        // Mengambil semua galeri untuk dropdown
+        $galeries = Galery::all();
+        return view('photo.edit', compact('photo', 'galeries'));
     }
 
     // Memperbarui foto di database
-    public function update(Request $request, $kd_photo)
+    public function update(Request $request, Photo $photo)
     {
-        $photo = Photo::findOrFail($kd_photo); // Temukan foto berdasarkan kd_photo
-
-        // Validasi input
+        // Validasi input dari form
         $request->validate([
             'judul_photo' => 'required|string|max:255',
-            'isi_photo' => 'required|url', // Validasi untuk memastikan ini adalah URL yang valid
-            'status_photo' => 'required|boolean', // Validasi untuk status_photo
-            'galery_id' => 'required|exists:galery,id', // Validasi galeri
+            'isi_photo' => 'nullable|image', // Gambar bersifat opsional
+            'status_photo' => 'required|boolean',
+            'galery_id' => 'required|exists:galery,id',
         ]);
+
+        // Siapkan data yang akan diupdate
+        $data = [
+            'judul_photo' => $request->judul_photo,
+            'status_photo' => $request->status_photo,
+            'galery_id' => $request->galery_id,
+            'updated_at' => now(), // Mengupdate waktu
+        ];
+
+        // Jika ada gambar baru yang diunggah
+        if ($request->hasFile('isi_photo')) {
+            // Hapus gambar lama dari storage jika ada
+            if ($photo->isi_photo) {
+                Storage::disk('public')->delete($photo->isi_photo);
+            }
+            // Simpan gambar baru dan tambahkan ke data
+            $path = $request->file('isi_photo')->store('photos', 'public');
+            $data['isi_photo'] = $path;
+        }
 
         // Update data foto
-        $photo->update([
-            'judul_photo' => $request->judul_photo,
-            'isi_photo' => $request->isi_photo, // Simpan URL gambar
-            'status_photo' => $request->status_photo,
-            'user_id' => Auth::id(), // Simpan ID pengguna yang sedang login
-            'galery_id' => $request->galery_id, // Update galeri ID
-            'updated_at' => now(), // Menyimpan waktu update saat ini
-        ]);
+        $photo->update($data);
 
-        return redirect()->route('photo.index')->with('success', 'Foto berhasil diperbarui.'); // Redirect dengan pesan sukses
+        return redirect()->route('photo.index')->with('success', 'Foto berhasil diperbarui.');
     }
 
     // Menghapus foto dari database
-    public function destroy($kd_photo)
+    public function destroy(Photo $photo)
     {
-        $photo = Photo::findOrFail($kd_photo); // Temukan foto berdasarkan kd_photo
-        $photo->delete(); // Menghapus foto dari database
-
-        return redirect()->route('photo.index')->with('success', 'Foto berhasil dihapus.'); // Redirect dengan pesan sukses
+        // Hapus gambar dari storage jika ada
+        if ($photo->isi_photo) {
+            Storage::disk('public')->delete($photo->isi_photo);
+        }
+        // Hapus foto dari database
+        $photo->delete();
+        return redirect()->route('photo.index')->with('success', 'Foto berhasil dihapus.');
     }
 }

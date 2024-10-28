@@ -7,16 +7,16 @@
             <a href="{{ route('photo.create') }}" class="btn btn-primary">Tambah Foto</a> <!-- Tombol Tambah Foto -->
         </div>
 
-        <form action="{{ route('photo.store') }}" method="POST">
+        <form action="{{ route('photo.store') }}" method="POST" enctype="multipart/form-data"> <!-- Pastikan menggunakan enctype untuk file upload -->
             @csrf
             <div class="mb-3">
                 <label for="judul_photo" class="form-label">Judul Foto</label>
                 <input type="text" name="judul_photo" id="judul_photo" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label for="isi_photo" class="form-label">URL Gambar</label>
-                <input type="url" name="isi_photo" id="isi_photo" class="form-control" required>
-                <small class="form-text text-muted">Masukkan URL gambar yang valid.</small>
+                <label for="isi_photo" class="form-label">Unggah Gambar</label>
+                <input type="file" name="isi_photo" id="isi_photo" class="form-control" accept="image/*" required>
+                <small class="form-text text-muted">Unggah gambar yang valid.</small>
             </div>
             <div class="mb-3">
                 <label for="status_photo" class="form-label">Status</label>

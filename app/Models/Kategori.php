@@ -30,8 +30,10 @@ class Kategori extends Model
         return $this->hasMany(Agenda::class, 'kategori_id', 'id');
     }
 
-    public function photos()
+    public function galery()
     {
-        return $this->hasMany(Photo::class, 'kategori_id', 'id');
+        return $this->hasMany(Galery::class, 'kategori_id', 'id');
     }
+
+   
 }

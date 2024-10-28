@@ -7,22 +7,29 @@
         <br>
 
         <!-- Form Edit Foto -->
-        <form action="{{ route('photo.update', $photo->kd_photo) }}" method="POST"> <!-- Pastikan menggunakan kd_photo sebagai identifier -->
+        <form action="{{ route('photo.update', $photo->kd_photo) }}" method="POST" enctype="multipart/form-data"> <!-- Pastikan menggunakan kd_photo sebagai identifier -->
             @csrf
             @method('PUT')
 
             <!-- Input Judul Foto -->
             <div class="mb-3">
                 <label for="judul_photo" class="form-label">Judul Foto</label>
-                <input type="text" name="judul_photo" id="judul_photo" class="form-control" value="{{ $photo->judul_photo }}" required>
+                <input type="text" name="judul_photo" id="judul_photo" class="form-control" value="{{ old('judul_photo', $photo->judul_photo) }}" required>
             </div>
 
-            <!-- Input URL Gambar -->
+            <!-- Input Gambar -->
             <div class="mb-3">
-                <label for="isi_photo" class="form-label">Isi Foto</label>
-                <input type="url" name="isi_photo" id="isi_photo" class="form-control" value="{{ $photo->isi_photo }}" required>
-                <small class="form-text text-muted">Masukkan URL Gambar yang valid.</small>
+                <label for="isi_photo" class="form-label">Unggah Gambar</label>
+                <input type="file" name="isi_photo" id="isi_photo" class="form-control" accept="image/*">
+                <small class="form-text text-muted">Unggah gambar yang valid. (Kosongkan jika tidak ingin mengganti gambar)</small>
             </div>
+
+            @if ($photo->isi_photo)
+                <div class="mb-3">
+                    <label for="current_image" class="form-label">Gambar Saat Ini</label>
+                    <img src="{{ Storage::url($photo->isi_photo) }}" alt="Gambar saat ini" class="img-thumbnail" style="max-width: 200px;">
+                </div>
+            @endif
 
             <!-- Select Status Foto -->
             <div class="mb-3">

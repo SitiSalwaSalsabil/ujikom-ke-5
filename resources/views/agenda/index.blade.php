@@ -14,7 +14,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('agenda.create') }}">Tambah Agenda</a>
                 </li>
-                <!-- Tambahkan item menu lain di sini jika perlu -->
             </ul>
         </div>
     </nav>
@@ -42,17 +41,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($agenda as $item)  <!-- Mengganti variabel dari $agenda menjadi $item -->
+                        @foreach($agenda as $item)
                             <tr>
-                                <td>{{ $item->kd_agenda }}</td> <!-- Menggunakan $item untuk menampilkan data -->
+                                <td>{{ $item->kd_agenda }}</td>
                                 <td>{{ $item->judul_agenda }}</td>
-                                <td><img src="{{ $item->isi_agenda}}" alt="{{ $item->judul_agenda }}" style="width: 250px; height: auto;"></td> 
+                                <td>
+                            @if ($item->isi_agenda)
+                                <img src="{{ Storage::url($item->isi_agenda) }}" alt="{{ $item->judul_agenda }}" style="width: 250px; height: auto;">
+                            @else
+                                <p>Tidak ada gambar</p>
+                            @endif
+                        </td>
                                 <td>{{ \Carbon\Carbon::parse($item->tgl_agenda)->format('d-m-Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($item->tgl_post_agenda)->format('d-m-Y') }}</td>
                                 <td class="{{ $item->status_agenda ? 'text-success' : 'text-danger' }}">
                                     {{ $item->status_agenda ? 'Aktif' : 'Tidak Aktif' }}
-                                </td>       
-                                <td>{{ $item->kategori ? $item->kategori->judul : 'Tidak ada Kategori' }}</td> <!-- Memperbaiki dari $info menjadi $item -->
+                                </td>
+                                <td>{{ $item->kategori ? $item->kategori->judul : 'Tidak ada Kategori' }}</td>
                                 <td>
                                     <a href="{{ route('agenda.edit', $item->kd_agenda) }}" class="btn btn-warning btn-sm">Edit</a>
                                     <form action="{{ route('agenda.destroy', $item->kd_agenda) }}" method="POST" style="display:inline;">
@@ -68,9 +73,8 @@
             </div>
         </div>
 
-        <!-- Tombol Kembali ke Dashboard -->
         <div class="mb-3 mt-4">
-            <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a> <!-- Sesuaikan dengan route dashboard Anda -->
+            <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
         </div>
     </div>
 @endsection

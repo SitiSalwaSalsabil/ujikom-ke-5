@@ -42,13 +42,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($photos as $item)  <!-- Menggunakan variabel $photos untuk daftar foto -->
+                        @foreach($photos as $item)  <!-- Menggunakan variabel $photo untuk daftar foto -->
                             <tr>
                                 <td>{{ $item->kd_photo }}</td>
                                 <td>{{ $item->judul_photo }}</td>
                                 <td>
-                                    <img src="{{ $item->isi_photo }}" alt="{{ $item->judul_photo }}" style="width: 250px; height: auto;"> <!-- Menampilkan gambar foto -->
-                                </td>
+                            <img src="{{ Storage::url($item->isi_photo) }}" alt="{{ $item->judul_photo }}" width="100"> <!-- Menampilkan gambar -->
+                        </td>
                                 <td class="{{ $item->status_photo ? 'text-success' : 'text-danger' }}">
                                     {{ $item->status_photo ? 'Aktif' : 'Tidak Aktif' }}
                                 </td>

@@ -123,7 +123,7 @@
             <li><a href="{{ route('agenda.index') }}"><i class="bi bi-calendar"></i> Agenda</a></li>
             <li><a href="{{ route('photo.index') }}"><i class="bi bi-journal-album"></i> Photo</a></li>
             <li><a href="{{ route('kategori.index') }}"><i class="bi bi-card-checklist"></i> Kategori</a></li>
-            <li><a href="#"><i class="bi bi-journal-album"></i> Galery</a></li>
+            <li><a href="{{ route('galery.index') }}"><i class="bi bi-journal-album"></i> Galery</a></li>
             <li><a href="{{ route('profile.edit') }}"><i class="fas fa-user"></i> Users</a></li>
         </ul>
         <hr>

@@ -5,6 +5,7 @@ use App\Http\Controllers\InformasiController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\GaleryController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,8 @@ Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.
     Route::resource('agenda', AgendaController::class);
     Route::resource('photo', PhotoController::class);
     Route::resource('kategori', KategoriController::class);
+    Route::resource('galery', GaleryController::class);
+
 });
 
 require __DIR__.'/auth.php'; 

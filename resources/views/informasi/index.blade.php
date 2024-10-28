@@ -42,33 +42,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($informasi as $item)  <!-- Mengganti variabel dari $agenda menjadi $item -->
-                        <tr>
-                            <td>{{ $item->kd_info }}</td> <!-- Menggunakan $item untuk menampilkan data -->
-                            <td>{{ $item->judul_info }}</td>
-                            <td>
-                                @if (filter_var($item->isi_info, FILTER_VALIDATE_URL)) 
-                                    <img src="{{ $item->isi_info }}" alt="{{ $item->judul_info }}" style="width: 250px; height: auto;"> 
-                                @else
-                                    {{ Str::limit($item->isi_info, 50) }} <!-- Jika bukan URL, tampilkan ringkasan isi -->
-                                @endif
-                            </td> 
-                            <td>{{ \Carbon\Carbon::parse($item->tgl_post_info)->format('d-m-Y') }}</td> <!-- Menggunakan tgl_post_info -->
-                            <td class="{{ $item->status_info ? 'text-success' : 'text-danger' }}">
-                                {{ $item->status_info ? 'Aktif' : 'Tidak Aktif' }}
-                            </td>   
-                            
-                            <td>{{ $item->kategori ? $item->kategori->judul : 'Tidak ada Kategori' }}</td> <!-- Memperbaiki dari $info menjadi $item -->
-                            <td>
-                                <a href="{{ route('informasi.edit', $item->kd_info) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ route('informasi.destroy', $item->kd_info) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
+                @foreach($informasi as $item)
+                    <tr>
+                        <td>{{ $item->kd_info }}</td>
+                        <td>{{ $item->judul_info }}</td>
+                        <td>
+                            @if ($item->isi_info)
+                                <img src="{{ Storage::url($item->isi_info) }}" alt="{{ $item->judul_info }}" style="width: 250px; height: auto;">
+                            @else
+                                <p>Tidak ada gambar</p>
+                            @endif
+                        </td>
+                        <td>{{ \Carbon\Carbon::parse($item->tgl_post_info)->format('d-m-Y') }}</td>
+                        <td class="{{ $item->status_info ? 'text-success' : 'text-danger' }}">
+                            {{ $item->status_info ? 'Aktif' : 'Tidak Aktif' }}
+                        </td>
+                        <td>{{ $item->kategori ? $item->kategori->judul : 'Tidak ada Kategori' }}</td>
+                        <td>
+                            <a href="{{ route('informasi.edit', $item->kd_info) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ route('informasi.destroy', $item->kd_info) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>

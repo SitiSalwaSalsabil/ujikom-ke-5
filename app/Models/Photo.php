@@ -9,25 +9,21 @@ class Photo extends Model
 {
     use HasFactory;
 
-    protected $table = 'photo'; // Pastikan ini adalah nama tabel Anda
-    protected $primaryKey = 'kd_photo'; // Primary key
+    protected $table = 'photo'; // Pastikan ini sesuai dengan nama tabel Anda
+    protected $primaryKey = 'kd_photo'; // Ganti ini dengan nama kolom primary key Anda jika tidak 'id'
+    public $incrementing = true; // Pastikan ini true jika kolom primary key adalah auto-increment
+    protected $keyType = 'int'; // Tipe data kolom primary key
 
-    // Daftar kolom yang dapat diisi
     protected $fillable = [
         'judul_photo',
         'isi_photo',
+        'status_photo',
         'user_id',
-        'status_photo', // Tambahkan ini
-        'kategori_id', // Menambahkan galery_id
-        'created_at',
-        'updated_at',
+        'galery_id',
     ];
-    
-    public $timestamps = true; // Mengaktifkan timestamp otomatis
 
-    // Jika ada relasi dengan model Galery
     public function galery()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_id', 'id');
+        return $this->belongsTo(Galery::class, 'galery_id');
     }
 }
