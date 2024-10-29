@@ -1,3 +1,9 @@
+@extends('layouts.app')
+
+@section('content')
+
+
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -10,6 +16,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+
+    
     <!-- Custom Styles -->
     <style>
         body {
@@ -111,11 +119,11 @@
 <div class="wrapper">
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="profile mb-3">
-            <img src="https://via.placeholder.com/50" alt="Profile" class="img-fluid rounded-circle">
-            <p>Admin</p>
-            <p class="text-success">Online</p>
-        </div>
+    <div class="profile mb-3">
+    <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" alt="Profile" class="img-fluid rounded-circle" width="50" height="50">
+    <p>{{ Auth::user()->name }}</p> <!-- Bisa juga gunakan nama user -->
+    <p class="text-success">Online</p>
+</div>
         <hr>
         <ul>
             <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
@@ -127,10 +135,7 @@
             <li><a href="{{ route('profile.edit') }}"><i class="fas fa-user"></i> Users</a></li>
         </ul>
         <hr>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-danger w-100"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </form>
+      
     </div>
 
     <!-- Main Content -->
@@ -139,7 +144,7 @@
         <nav class="navbar navbar-light bg-light">
             <span class="navbar-brand mb-2 h1 mx-3">Dashboard</span>
             <div class="d-flex align-items-center">
-                <span class="mx-5">Admin</span>
+                <span class="mx-5"></span>
             </div>
         </nav>
 
@@ -198,3 +203,4 @@
 
 </body>
 </html>
+@endsection

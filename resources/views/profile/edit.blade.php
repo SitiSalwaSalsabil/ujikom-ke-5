@@ -14,13 +14,15 @@
     <div class="row">
         <div class="col-md-4">
             <div class="card mb-4">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Hanni_OLENS_2.jpg" class="card-img-top" alt="Profile Image">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $user->name }}</h5>
-                    <p class="card-text">Email: {{ $user->email }}</p>
-                    <p class="card-text">Role: Operator</p>
-                    <p class="card-text"><span class="badge bg-success">Verified</span></p>
-                </div>
+            <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('default-image.jpg') }}" class="card-img-top" alt="Profile Image">
+
+            <div class="card-body">
+    <h5 class="card-title">{{ Auth::user()->name }}</h5> <!-- Menggunakan Auth::user() -->
+    <p class="card-text">Email: {{ Auth::user()->email }}</p>
+
+    <p class="card-text"><span class="badge bg-success">Verified</span></p>
+</div>
+
             </div>
         </div>
         <div class="col-md-8">
@@ -44,7 +46,8 @@
     </div>
 
     <div class="mb-3">
-        <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : 'https://upload.wikimedia.org/wikipedia/commons/2/24/Hanni_OLENS_2.jpg' }}" class="card-img-top" alt="Profile Image" style="width: 150px; height: 150px;">
+    <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('default-image.jpg') }}" class="card-img-top" alt="Profile Image" style="width: 150px; height: 150px;">
+
     </div>
 
     <button type="submit" class="btn btn-primary">Update Profile</button>

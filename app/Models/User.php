@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 
+
 class User extends Authenticatable
 {
     use HasFactory, HasApiTokens, Notifiable;
@@ -17,10 +18,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    use HasApiTokens;
     protected $fillable = [
         'name',
         'email',
         'password',
+      
     ];
 
     /**
